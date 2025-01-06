@@ -73,7 +73,25 @@ public class ArtActivity extends AppCompatActivity {
             //old art
             int artId = intent.getIntExtra("artId", 1);
             binding.button.setVisibility(View.INVISIBLE);
+            
+            // Make fields non-editable but more visible
+            binding.nameText.setEnabled(false);
+            binding.artistText.setEnabled(false);
+            binding.yearText.setEnabled(false);
+            binding.imageView.setEnabled(false);
+            binding.imageView.setClickable(false);
+            
+            // Make text darker and bold
+            binding.nameText.setTextColor(getResources().getColor(android.R.color.black));
+            binding.artistText.setTextColor(getResources().getColor(android.R.color.black));
+            binding.yearText.setTextColor(getResources().getColor(android.R.color.black));
+            binding.nameText.setAlpha(1.0f);
+            binding.artistText.setAlpha(1.0f);
+            binding.yearText.setAlpha(1.0f);
 
+            // Add delete button
+            binding.deleteButton.setVisibility(View.VISIBLE);
+            
             try {
                 Cursor cursor = database.rawQuery("SELECT * FROM arts WHERE id = ?", new String[] {String.valueOf(artId)});
 
@@ -232,5 +250,25 @@ public class ArtActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    public void deleteArt(View view) {
+        try {
+            Intent intent = getIntent();
+            int artId = intent.getIntExtra("artId", 1);
+            
+            database.execSQL("DELETE FROM arts WHERE id = ?", new String[]{String.valueOf(artId)});
+            
+            Toast.makeText(this, "Artwork deleted", Toast.LENGTH_SHORT).show();
+            
+            // Return to main activity
+            Intent mainIntent = new Intent(ArtActivity.this, MainActivity.class);
+            mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(mainIntent);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error deleting artwork", Toast.LENGTH_SHORT).show();
+        }
     }
 }
